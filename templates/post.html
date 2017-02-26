@@ -5,11 +5,16 @@
     </div>
 
     <div class="post-date">
-      {{p.created.strftime("%b %d, %Y")}}
+      {% if user %}
+        {{p.created.strftime("%b %d, %Y")}} | Edit
+      {% else %}
+        {{p.created.strftime("%b %d, %Y")}} | Created by {{p.user_name}}
+      {% endif %}
     </div>
   </div>
 
   <div class="post-content">
     {{p._render_text | safe}}
   </div>
+
 </div>

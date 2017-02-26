@@ -4,6 +4,14 @@
 
   {% for p in posts %}
     {{ p.render() | safe }}
+      <div class="like-comment-bar">
+    <div class="like">
+      Like
+    </div>
+    <div class="comments">
+      Comment
+    </div>
+  </div>
     <br><br>
   {% endfor %}
 

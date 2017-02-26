@@ -99,6 +99,26 @@ input[type=submit] {
 
 }
 
+.like-comment-bar {
+    position: relative;
+    margin-top: 40px;
+    border-bottom: 1px solid #AAA;
+}
+
+.like {
+    color: #999;
+    font-size: 13px;
+}
+
+.comments {
+    position: absolute;
+    font-size: 13px;
+    right: 0px;
+    bottom: 0px;
+    color: #999;
+
+}
+
 .post-content {
     margin-top: 5px;
 }
