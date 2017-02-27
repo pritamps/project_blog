@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {% if user %}
-    {{post.render() | safe}} YOO
+  {% if user.name == post.user_name %}
+    {{post.render() | safe}}
+    Edit
   {% else %}
     {{post.render() | safe}}
   {% endif %}
