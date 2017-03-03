@@ -18,7 +18,6 @@ secret = 'fart'
 
 
 def render_str(template, **params):
-    print "YOOO! I'm here now"
     t = jinja_env.get_template(template)
     print params
     return t.render(params)
@@ -40,7 +39,6 @@ class BlogHandler(webapp2.RequestHandler):
         self.response.out.write(*a, **kw)
 
     def render_str(self, template, **params):
-        print "YOOOO I'm here!"
         params['user'] = self.user
         print params
         return render_str(template, **params)
@@ -146,10 +144,17 @@ class Post(db.Model):
     last_modified = db.DateTimeProperty(auto_now=True)
 
     def render(self):
-        print "YOOOO I'm here in POST!"
 
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p=self)
+
+    def like(self, name):
+        print "YOOO I'm liking: " + str(name)
+
+
+class Like(db.Model):
+    post_id = db.StringProperty(required=True)
+    user_id = db.StringProperty(required=True)
 
 
 class BlogFront(BlogHandler):
@@ -165,7 +170,6 @@ class PostPage(BlogHandler):
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
-        print "YOOO " + str(self.user)
 
         if not post:
             self.error(404)
@@ -174,15 +178,68 @@ class PostPage(BlogHandler):
         self.render("permalink.html", post=post)
 
 
+class Like(db.Model):
+    post_id = db.StringProperty(required=True)
+
+
 class NewPost(BlogHandler):
 
-    def get(self):
+    def get(self, post_id=None):
+        subject = ""
+        content = ""
+        if post_id:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
+            subject = post.subject
+            content = post.content
         if self.user:
-            self.render("newpost.html")
+            self.render("newpost.html", subject=subject, content=content)
         else:
             self.redirect("/login")
 
+    def post(self, post_id=None):
+        print "HEYYYYYYYYY"
+
+        if not self.user:
+            self.redirect('/blog')
+
+        subject = self.request.get('subject')
+        content = self.request.get('content')
+
+        if subject and content and self.user:
+            # Edit post
+            if post_id:
+                key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+                p = db.get(key)
+                p.subject = subject
+                p.content = content
+            # Create post
+            else:
+                p = Post(parent=blog_key(), subject=subject, content=content,
+                         user_name=self.user.name)
+            p.put()
+            self.redirect('/blog/%s' % str(p.key().id()))
+        else:
+            error = "subject and content, please!"
+            self.render(
+                "newpost.html", subject=subject, content=content, error=error)
+
+
+class EditPostPage(NewPost):
+
+    def get(self, post_id):
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+        print "YOOO " + str(self.user)
+
+        if not post:
+            self.error(404)
+            return
+
+        self.render("newpost.html", content=post.content, subject=post.subject)
+
     def post(self):
+        print "YOYOYOYOY"
         if not self.user:
             self.redirect('/blog')
 
@@ -200,7 +257,6 @@ class NewPost(BlogHandler):
                 "newpost.html", subject=subject, content=content, error=error)
 
 
-# Unit 2 HW's
 class Rot13(BlogHandler):
 
     def get(self):
@@ -344,6 +400,7 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/unit2/welcome', Welcome),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
+                               ('/blog/([0-9]+)/edit', NewPost),
                                ('/blog/newpost', NewPost),
                                ('/signup', Register),
                                ('/login', Login),

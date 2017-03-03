@@ -6,7 +6,7 @@
 
     <div class="post-date">
       {% if user %}
-        {{p.created.strftime("%b %d, %Y")}} | Edit
+        {{p.created.strftime("%b %d, %Y")}} | <a class="post-link" href="/blog/{{p.key().id()}}/edit">Edit</a>
       {% else %}
         {{p.created.strftime("%b %d, %Y")}} | Created by {{p.user_name}}
       {% endif %}

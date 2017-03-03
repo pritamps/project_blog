@@ -3,8 +3,22 @@
 {% block content %}
   {% if user.name == post.user_name %}
     {{post.render() | safe}}
-    Edit
   {% else %}
     {{post.render() | safe}}
   {% endif %}
+<div class="like-comment-bar">
+  <div id="like_yo" class="like" onclick="myFunction()">
+    Like55
+
+  </div>
+  <div class="comments">
+    Comment
+  </div>
+  {% if user.name == post.user_name %}
+  <div class="edit">
+    <a class="post-link" href="/blog/{{post.key().id()}}/edit">Edit</a>
+  </div>
+  {% endif %}
+</div>
+
 {% endblock %}
