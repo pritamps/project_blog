@@ -191,28 +191,32 @@ class BlogFront(BlogHandler):
 
 class PostPage(BlogHandler):
 
-    post = None
+    post_obj = None
 
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-        self.post = db.get(key)
+        self.post_obj = db.get(key)
 
-        if not self.post:
+        if not self.post_obj:
             self.error(404)
             return
 
-        self.render("permalink.html", post=self.post,
-                    comments=self.post.get_comments())
+        self.render("permalink.html", post=self.post_obj,
+                    comments=self.post_obj.get_comments())
 
     def post(self, post_id):
+        content = self.request.get('content')
 
+        if not content:
+            self.redirect('/blog/%s' % post_id)
+            return
         if not self.user:
             user_name = "Anon"
-            self.redirect('/blog')
+            # self.redirect('/blog')
         else:
             user_name = self.user.name
 
-        content = self.request.get('content')
+        print "HEY DUDE!"
         comment = Comment(
             post_id=post_id, user_name=user_name, content=content)
         comment.put()

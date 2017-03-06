@@ -35,7 +35,9 @@
     <br>
     <input type="submit">
   </form>
-  
+
+<div class="error">{{error}}</div>        
+
   {% if comments.count() > 0 %}
   {% for comment in comments %}
     {% if comment %}
