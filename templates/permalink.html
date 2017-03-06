@@ -23,10 +23,24 @@
     {% endif %}
     {% if user.name == post.user_name %}
     <div class="edit">
-      <a class="post-link" href="/blog/{{post.key().id()}}/edit">Edit</a>
+      <a class="post-link" href="/blog/{{post.key().id()}}/edit">Edit</a> | 
+      <a class="post-link" href="/blog/{{post.key().id()}}/delete">Delete</a>
     </div>
     {% endif %}
   </div>
+
+  <form method="post">
+    <div>Comment</div>
+    <textarea class="comment_area" name="content">{{content}}</textarea>
+    <br>
+    <input type="submit">
+  </form>
+  
+  {% if comments %}
+  {% for comment in comments %}
+    {{comment.render() | safe}}
+  {% endfor %}
+  {% endif %}
 
 <script>
 function myFunction() {

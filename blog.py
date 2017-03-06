@@ -151,33 +151,30 @@ class Post(db.Model):
         return render_str("post.html", p=self)
 
     def get_number_of_likes(self):
-        print "Post id: " + str(self.key().id())
         n_likes = Like.all().filter('post_id = ', str(self.key().id())).count()
         return str(n_likes)
 
     def has_user_liked(self, user_name):
-        print "Yo!" + user_name
         prev_user_likes = Like.all().filter('user_name = ', user_name).filter(
             'post_id = ', str(self.key().id())).count()
-        print "YOOOO " + user_name + " " + str(prev_user_likes)
         if (prev_user_likes > 0):
             return True
         return False
 
     def get_liked_users(self):
         likes = Like.all().filter('post_id = ', str(self.key().id()))
-        print "YOOOOO" + str(likes.count())
         liked_users = ""
         first_user = True
         for like in likes:
             comma = ", "
             if first_user:
                 comma = ""
-            print "YOYOYOY " + like.user_name
             liked_users = liked_users + comma + like.user_name
             first_user = False
-        print "YOYOY " + liked_users
         return liked_users
+
+    def get_comments(self):
+        return Comment.all().filter('post_id = ', str(self.key().id())).order("-created")
 
 
 class Like(db.Model):
@@ -188,27 +185,56 @@ class Like(db.Model):
 class BlogFront(BlogHandler):
 
     def get(self):
-        print "YO"
         posts = greetings = Post.all().order('-created')
         self.render('front.html', posts=posts)
 
 
 class PostPage(BlogHandler):
 
+    post = None
+
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-        post = db.get(key)
+        self.post = db.get(key)
 
-        if not post:
+        if not self.post:
             self.error(404)
             return
 
-        self.render("permalink.html", post=post)
+        self.render("permalink.html", post=self.post,
+                    comments=self.post.get_comments())
+
+    def post(self, post_id):
+
+        if not self.user:
+            user_name = "Anon"
+            self.redirect('/blog')
+        else:
+            user_name = self.user.name
+
+        content = self.request.get('content')
+        comment = Comment(
+            post_id=post_id, user_name=user_name, content=content)
+        comment.put()
+        sleep(0.1)
+        self.redirect('/blog/%s' % post_id)
 
 
 class Like(db.Model):
     post_id = db.StringProperty(required=True)
     user_name = db.StringProperty(required=True)
+
+
+class Comment(db.Model):
+    post_id = db.StringProperty(required=True)
+    user_name = db.StringProperty(required=True)
+    content = db.TextProperty(required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
+
+    def render(self):
+
+        self._render_text = self.content.replace('\n', '<br>')
+        return render_str("comment.html", comment=self)
 
 
 class CreateOrEditPost(BlogHandler):
@@ -256,7 +282,6 @@ class CreateOrEditPost(BlogHandler):
 class LikePost(BlogHandler):
 
     def get(self, user_name=None, post_id=None):
-        print "YOOOO"
         if post_id and user_name:
             print "YOOO I'm liking: " + str(user_name) + " " + str(post_id)
             l = Like(parent=blog_key(), post_id=post_id,
@@ -264,6 +289,18 @@ class LikePost(BlogHandler):
             l.put()
             sleep(0.1)
             self.redirect('/blog/%s' % post_id)
+
+
+class DeletePost(BlogHandler):
+
+    def get(self, post_id):
+        if post_id and self.user:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            p = db.get(key)
+            if p.user_name == self.user.name:
+                p.delete()
+                sleep(0.1)
+                self.redirect('/blog')
 
 
 class Rot13(BlogHandler):
@@ -410,6 +447,7 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
                                ('/blog/([0-9]+)/edit', CreateOrEditPost),
+                               ('/blog/([0-9]+)/delete', DeletePost),
                                ('/blog/([0-9a-zA-Z]+)/([0-9]+)/like', LikePost),
                                ('/blog/newpost', CreateOrEditPost),
                                ('/signup', Register),

@@ -70,6 +70,11 @@ textarea {
   font-family: monospace;
 }
 
+.comment_area {
+    width: 60%;
+    height: 100px;
+}
+
 input[type=submit] {
   font-size: 24px;
 }
@@ -106,9 +111,31 @@ input[type=submit] {
 
 }
 
+.comment + .comment {
+    margin-top: 45px;
+}
+
+.comment-heading {
+    margin-top: 40px;
+    position: relative;
+}
+
+.comment-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.comment-date {
+    text-align: left;
+    right: 0px;
+    bottom: 0px;
+    color: #999;
+}
+
 .like-comment-bar {
     position: relative;
     margin-top: 40px;
+    margin-bottom: 30px;
     border-bottom: 1px solid #AAA;
 }
 
