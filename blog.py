@@ -218,7 +218,7 @@ class PostPage(BlogHandler):
 
         print "HEY DUDE!"
         comment = Comment(
-            post_id=post_id, user_name=user_name, content=content)
+            parent=blog_key(), post_id=post_id, user_name=user_name, content=content)
         comment.put()
         sleep(0.1)
         self.redirect('/blog/%s' % post_id)
@@ -255,13 +255,15 @@ class CreateOrEditPost(BlogHandler):
     def get(self, post_id=None):
         subject = ""
         content = ""
+        title = "new post"
         if post_id:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
             post = db.get(key)
             subject = post.subject
             content = post.content
+            title = "edit post"
         if self.user:
-            self.render("newpost.html", subject=subject, content=content)
+            self.render("createoreditpost.html", title=title, subject=subject, content=content)
         else:
             self.redirect("/login")
 
@@ -281,16 +283,18 @@ class CreateOrEditPost(BlogHandler):
                 p = db.get(key)
                 p.subject = subject
                 p.content = content
+                title = "edit post"
             # Create post
             else:
-                p = Post(parent=blog_key(), subject=subject, content=content,
+                title = "new post"
+                p = Post(parent=blog_key(), title=title, subject=subject, content=content,
                          user_name=self.user.name)
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:
             error = "subject and content, please!"
             self.render(
-                "newpost.html", subject=subject, content=content, error=error)
+                "createoreditpost.html", subject=subject, content=content, error=error)
 
 
 class LikePost(BlogHandler):
@@ -316,6 +320,50 @@ class DeletePost(BlogHandler):
                 p.delete()
                 sleep(0.1)
                 self.redirect('/blog')
+
+
+class DeleteComment(BlogHandler):
+
+    def get(self, post_id, comment_id):
+        if post_id and comment_id and self.user:
+            print "YOOOO "
+            key = db.Key.from_path('Comment', int(comment_id), parent=blog_key())
+            c = db.get(key)
+            if c.user_name == self.user.name:
+
+                c.delete()
+                sleep(0.1)
+                self.redirect('/blog/%s' % post_id)
+
+
+class EditComment(BlogHandler):
+
+    def get(self, post_id, comment_id):
+        if post_id and comment_id and self.user:
+            key = db.Key.from_path('Comment', int(comment_id), parent=blog_key())
+            c = db.get(key)
+            content = c.content
+            self.render("editcomment.html", content=content)
+
+    def post(self, post_id=None, comment_id=None):
+        """ Handles post request (clicking the Submit button)"""
+
+        if not self.user:
+            self.redirect('/blog')
+
+        content = self.request.get('content')
+
+        if content and self.user:
+            if comment_id:
+                key = db.Key.from_path('Comment', int(comment_id), parent=blog_key())
+                c = db.get(key)
+                c.content = content
+                c.put()
+                self.redirect('/blog/%s' % str(c.post_id))
+        else:
+            error = "content, please!"
+            self.render(
+                "createoreditpost.html", content=content, error=error)
 
 
 class Rot13(BlogHandler):
@@ -462,6 +510,8 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
                                ('/blog/([0-9]+)/edit', CreateOrEditPost),
+                               ('/blog/([0-9]+)/([0-9]+)/edit', EditComment),
+                               ('/blog/([0-9]+)/([0-9]+)/delete', DeleteComment),
                                ('/blog/([0-9]+)/delete', DeletePost),
                                ('/blog/([0-9a-zA-Z]+)/([0-9]+)/like', LikePost),
                                ('/blog/newpost', CreateOrEditPost),

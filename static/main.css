@@ -125,6 +125,12 @@ input[type=submit] {
     font-weight: bold;
 }
 
+.comment-link {
+    font-size: 10px;
+    font-weight: lighter;
+    color: #333;
+}
+
 .comment-date {
     text-align: left;
     right: 0px;
