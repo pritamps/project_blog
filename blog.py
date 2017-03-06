@@ -221,11 +221,17 @@ class PostPage(BlogHandler):
 
 
 class Like(db.Model):
+    """
+    GQL DB model for likes on a Post
+    """
     post_id = db.StringProperty(required=True)
     user_name = db.StringProperty(required=True)
 
 
 class Comment(db.Model):
+    """
+    GQL DB model for comments on a Post
+    """
     post_id = db.StringProperty(required=True)
     user_name = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
@@ -238,6 +244,9 @@ class Comment(db.Model):
 
 
 class CreateOrEditPost(BlogHandler):
+    """
+    Handler for creating new posts and editing existing ones
+    """
 
     def get(self, post_id=None):
         subject = ""
@@ -253,6 +262,7 @@ class CreateOrEditPost(BlogHandler):
             self.redirect("/login")
 
     def post(self, post_id=None):
+        """ Handles post request (clicking the Submit button)"""
 
         if not self.user:
             self.redirect('/blog')
@@ -280,6 +290,7 @@ class CreateOrEditPost(BlogHandler):
 
 
 class LikePost(BlogHandler):
+    """ Handler that handles liking a post """
 
     def get(self, user_name=None, post_id=None):
         if post_id and user_name:

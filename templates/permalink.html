@@ -36,9 +36,11 @@
     <input type="submit">
   </form>
   
-  {% if comments %}
+  {% if comments.count() > 0 %}
   {% for comment in comments %}
+    {% if comment %}
     {{comment.render() | safe}}
+    {% endif %}
   {% endfor %}
   {% endif %}
 
