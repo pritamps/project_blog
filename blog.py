@@ -2,6 +2,7 @@ import os
 import re
 import random
 import hashlib
+from time import sleep
 import hmac
 from string import letters
 
@@ -142,14 +143,41 @@ class Post(db.Model):
     user_name = db.StringProperty(required=False, default="Unknown")
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
+    n_likes = 0
 
     def render(self):
 
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p=self)
 
-    def like(self, name):
-        print "YOOO I'm liking: " + str(name)
+    def get_number_of_likes(self):
+        print "Post id: " + str(self.key().id())
+        n_likes = Like.all().filter('post_id = ', str(self.key().id())).count()
+        return str(n_likes)
+
+    def has_user_liked(self, user_name):
+        print "Yo!" + user_name
+        prev_user_likes = Like.all().filter('user_name = ', user_name).filter(
+            'post_id = ', str(self.key().id())).count()
+        print "YOOOO " + user_name + " " + str(prev_user_likes)
+        if (prev_user_likes > 0):
+            return True
+        return False
+
+    def get_liked_users(self):
+        likes = Like.all().filter('post_id = ', str(self.key().id()))
+        print "YOOOOO" + str(likes.count())
+        liked_users = ""
+        first_user = True
+        for like in likes:
+            comma = ", "
+            if first_user:
+                comma = ""
+            print "YOYOYOY " + like.user_name
+            liked_users = liked_users + comma + like.user_name
+            first_user = False
+        print "YOYOY " + liked_users
+        return liked_users
 
 
 class Like(db.Model):
@@ -180,9 +208,10 @@ class PostPage(BlogHandler):
 
 class Like(db.Model):
     post_id = db.StringProperty(required=True)
+    user_name = db.StringProperty(required=True)
 
 
-class NewPost(BlogHandler):
+class CreateOrEditPost(BlogHandler):
 
     def get(self, post_id=None):
         subject = ""
@@ -198,7 +227,6 @@ class NewPost(BlogHandler):
             self.redirect("/login")
 
     def post(self, post_id=None):
-        print "HEYYYYYYYYY"
 
         if not self.user:
             self.redirect('/blog')
@@ -225,36 +253,17 @@ class NewPost(BlogHandler):
                 "newpost.html", subject=subject, content=content, error=error)
 
 
-class EditPostPage(NewPost):
+class LikePost(BlogHandler):
 
-    def get(self, post_id):
-        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-        post = db.get(key)
-        print "YOOO " + str(self.user)
-
-        if not post:
-            self.error(404)
-            return
-
-        self.render("newpost.html", content=post.content, subject=post.subject)
-
-    def post(self):
-        print "YOYOYOYOY"
-        if not self.user:
-            self.redirect('/blog')
-
-        subject = self.request.get('subject')
-        content = self.request.get('content')
-
-        if subject and content and self.user:
-            p = Post(parent=blog_key(), subject=subject, content=content,
-                     user_name=self.user.name)
-            p.put()
-            self.redirect('/blog/%s' % str(p.key().id()))
-        else:
-            error = "subject and content, please!"
-            self.render(
-                "newpost.html", subject=subject, content=content, error=error)
+    def get(self, user_name=None, post_id=None):
+        print "YOOOO"
+        if post_id and user_name:
+            print "YOOO I'm liking: " + str(user_name) + " " + str(post_id)
+            l = Like(parent=blog_key(), post_id=post_id,
+                     user_name=user_name)
+            l.put()
+            sleep(0.1)
+            self.redirect('/blog/%s' % post_id)
 
 
 class Rot13(BlogHandler):
@@ -400,8 +409,9 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/unit2/welcome', Welcome),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
-                               ('/blog/([0-9]+)/edit', NewPost),
-                               ('/blog/newpost', NewPost),
+                               ('/blog/([0-9]+)/edit', CreateOrEditPost),
+                               ('/blog/([0-9a-zA-Z]+)/([0-9]+)/like', LikePost),
+                               ('/blog/newpost', CreateOrEditPost),
                                ('/signup', Register),
                                ('/login', Login),
                                ('/logout', Logout),

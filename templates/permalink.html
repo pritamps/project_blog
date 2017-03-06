@@ -1,24 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {% if user.name == post.user_name %}
     {{post.render() | safe}}
-  {% else %}
-    {{post.render() | safe}}
-  {% endif %}
-<div class="like-comment-bar">
-  <div id="like_yo" class="like" onclick="myFunction()">
-    Like55
+  <div class="like-comment-bar">
+    <div class="like">
+      {% if user %}
+        {% if not post.has_user_liked(user.name) %}
+          <a class="post-link" href="/blog/{{user.name}}/{{post.key().id()}}/like">Like</a> 
+        {% else %}
+          Liked!
+        {% endif %}
+      {% endif %}
+      <div class="popup" onclick="myFunction()"> 👍 {{post.get_number_of_likes() }} 
+        <span class="popuptext" id="myPopup">{{post.get_liked_users() }}</span>
+      </div>
+      
+    </div>
+    {% if user %}
+    <div class="comments">
+      Comment
+    </div>
+    {% endif %}
+    {% if user.name == post.user_name %}
+    <div class="edit">
+      <a class="post-link" href="/blog/{{post.key().id()}}/edit">Edit</a>
+    </div>
+    {% endif %}
+  </div>
 
-  </div>
-  <div class="comments">
-    Comment
-  </div>
-  {% if user.name == post.user_name %}
-  <div class="edit">
-    <a class="post-link" href="/blog/{{post.key().id()}}/edit">Edit</a>
-  </div>
-  {% endif %}
-</div>
+<script>
+function myFunction() {
+    var popup = document.getElementById("myPopup");
+    popup.classList.toggle("show");
+}
 
+</script>
 {% endblock %}

@@ -4,19 +4,6 @@
 
   {% for p in posts %}
     {{ p.render() | safe }}
-      <div class="like-comment-bar">
-        <div class="like">
-          Like
-        </div>
-        <div class="comments">
-          Comment
-        </div>
-        {% if user.name == p.user_name %}
-          <div class="edit">
-            Edit
-        </div>
-        {% endif %}
-      </div>
     <br><br>
   {% endfor %}
 
