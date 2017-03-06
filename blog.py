@@ -151,10 +151,12 @@ class Post(db.Model):
         return render_str("post.html", p=self)
 
     def get_number_of_likes(self):
+        """ Returns number of likes that the current post has """
         n_likes = Like.all().filter('post_id = ', str(self.key().id())).count()
         return str(n_likes)
 
     def has_user_liked(self, user_name):
+        """ Returns if the current user has liked this post """
         prev_user_likes = Like.all().filter('user_name = ', user_name).filter(
             'post_id = ', str(self.key().id())).count()
         if (prev_user_likes > 0):
@@ -162,6 +164,7 @@ class Post(db.Model):
         return False
 
     def get_liked_users(self):
+        """ Returns list of users for the popup """
         likes = Like.all().filter('post_id = ', str(self.key().id()))
         liked_users = ""
         first_user = True
@@ -174,12 +177,8 @@ class Post(db.Model):
         return liked_users
 
     def get_comments(self):
+        """ Returns comments associated with this post """
         return Comment.all().filter('post_id = ', str(self.key().id())).order("-created")
-
-
-class Like(db.Model):
-    post_id = db.StringProperty(required=True)
-    user_id = db.StringProperty(required=True)
 
 
 class BlogFront(BlogHandler):
@@ -190,6 +189,7 @@ class BlogFront(BlogHandler):
 
 
 class PostPage(BlogHandler):
+    """Handler for the display of a post"""
 
     post_obj = None
 
@@ -205,6 +205,9 @@ class PostPage(BlogHandler):
                     comments=self.post_obj.get_comments())
 
     def post(self, post_id):
+        """
+        Adds a new comment to the post
+        """
         content = self.request.get('content')
 
         if not content:
@@ -216,7 +219,6 @@ class PostPage(BlogHandler):
         else:
             user_name = self.user.name
 
-        print "HEY DUDE!"
         comment = Comment(
             parent=blog_key(), post_id=post_id, user_name=user_name, content=content)
         comment.put()
@@ -263,7 +265,8 @@ class CreateOrEditPost(BlogHandler):
             content = post.content
             title = "edit post"
         if self.user:
-            self.render("createoreditpost.html", title=title, subject=subject, content=content)
+            self.render("createoreditpost.html", title=title,
+                        subject=subject, content=content)
         else:
             self.redirect("/login")
 
@@ -311,6 +314,9 @@ class LikePost(BlogHandler):
 
 
 class DeletePost(BlogHandler):
+    """
+    Deletes a Post
+    """
 
     def get(self, post_id):
         if post_id and self.user:
@@ -323,11 +329,15 @@ class DeletePost(BlogHandler):
 
 
 class DeleteComment(BlogHandler):
+    """
+    Deletes a Comment
+    """
 
     def get(self, post_id, comment_id):
         if post_id and comment_id and self.user:
             print "YOOOO "
-            key = db.Key.from_path('Comment', int(comment_id), parent=blog_key())
+            key = db.Key.from_path('Comment', int(
+                comment_id), parent=blog_key())
             c = db.get(key)
             if c.user_name == self.user.name:
 
@@ -337,10 +347,14 @@ class DeleteComment(BlogHandler):
 
 
 class EditComment(BlogHandler):
+    """
+    Edits Comment
+    """
 
     def get(self, post_id, comment_id):
         if post_id and comment_id and self.user:
-            key = db.Key.from_path('Comment', int(comment_id), parent=blog_key())
+            key = db.Key.from_path('Comment', int(
+                comment_id), parent=blog_key())
             c = db.get(key)
             content = c.content
             self.render("editcomment.html", content=content)
@@ -355,7 +369,8 @@ class EditComment(BlogHandler):
 
         if content and self.user:
             if comment_id:
-                key = db.Key.from_path('Comment', int(comment_id), parent=blog_key())
+                key = db.Key.from_path('Comment', int(
+                    comment_id), parent=blog_key())
                 c = db.get(key)
                 c.content = content
                 c.put()
@@ -511,7 +526,8 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/blog/([0-9]+)', PostPage),
                                ('/blog/([0-9]+)/edit', CreateOrEditPost),
                                ('/blog/([0-9]+)/([0-9]+)/edit', EditComment),
-                               ('/blog/([0-9]+)/([0-9]+)/delete', DeleteComment),
+                               ('/blog/([0-9]+)/([0-9]+)/delete',
+                                DeleteComment),
                                ('/blog/([0-9]+)/delete', DeletePost),
                                ('/blog/([0-9a-zA-Z]+)/([0-9]+)/like', LikePost),
                                ('/blog/newpost', CreateOrEditPost),

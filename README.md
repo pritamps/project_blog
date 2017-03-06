@@ -15,6 +15,7 @@ The following functionality is supported
 5. Users can delete posts that they have created
 6. Users can like others' posts. If a user has already liked a post, the text "Liked!" is displayed. If the current post is of the same user, no "Like" is available even though the number of likes is visible
 7. Users can edit and delete their own comments. If the functionality is available, it is displayed below the comment
+8. Clicking on the "Thumbs up" emoji gives a nice popup that displays the list of users that has liked a post
 
 Parts 1 and 2 were provided as starter code, and the rest has been added by me.
 
