@@ -14,6 +14,21 @@ class LikePost(BlogHandler):
 
     def get(self, user_name=None, post_id=None):
         if post_id and user_name:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
+            if not post:
+                self.error(404)
+                return
+            # Check if current user is author of the post, and if so,
+            # do nothing and return to the blog page
+            if user_name == post.user.name:
+                self.redirect('blog/%s' % post_id)
+
+            # Check if user has already liked the post before, and if so,
+            # do nothing and return to the blog page
+            for like in post.likes:
+                if like.user_name == user_name:
+                    self.redirect('blog/%s' % post_id)
             l = Like(parent=blog_key(), post_id=post_id,
                      user_name=user_name)
             l.put()
@@ -66,8 +81,10 @@ class CreateOrEditPost(BlogHandler):
     def post(self, post_id=None):
         """ Handles post request (clicking the Submit button)"""
 
+        # If no user is logged in, redirect to login page
         if not self.user:
-            self.redirect('/blog')
+            self.redirect('/login')
+            return
 
         subject = self.request.get('subject')
         content = self.request.get('content')
@@ -79,6 +96,12 @@ class CreateOrEditPost(BlogHandler):
                 p = db.get(key)
                 if not p:
                     self.error(404)
+                    return
+
+                # If current user is not the post author, then do nothing and 
+                # redirect to the post page
+                if not (p.user.name == self.user.name):
+                    self.redirect('/blog/%s' % post_id)
                     return
                 p.subject = subject
                 p.content = content

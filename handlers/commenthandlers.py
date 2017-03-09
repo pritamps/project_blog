@@ -55,10 +55,15 @@ class CreateEditComment(BlogHandler):
             key = db.Key.from_path('Comment', int(comment_id),
                                    parent=blog_key())
             comment = db.get(key)
+            if not comment:
+                self.error(404)
+                return
+            # Make sure comment author is same as current user before
+            # making the edit. If there is a mismatch, redirect to post page
+            if not (self.comment.user_name == self.user.name):
+                self.redirect('/blog/%s' % post_id)
+                return
             comment.content = content
-        if not comment:
-            self.error(404)
-            return
         comment.put()
         sleep(0.1)
         self.redirect('/blog/%s' % post_id)
