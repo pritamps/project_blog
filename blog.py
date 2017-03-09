@@ -10,7 +10,7 @@ from handlers.mainpagehandler import MainPage
 from handlers.blogfronthandler import BlogFront
 from handlers.postpagehandler import PostPage
 from handlers.posthandlers import CreateOrEditPost, DeletePost, LikePost
-from handlers.commenthandlers import CreateComment, EditComment, DeleteComment
+from handlers.commenthandlers import CreateEditComment, DeleteComment
 from handlers.signup import Signup, Register
 from handlers.loginlogout import Login, Logout
 
@@ -22,8 +22,8 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
                                ('/blog/([0-9]+)/edit', CreateOrEditPost),
-                               ('/blog/([0-9]+)/comment', CreateComment),
-                               ('/blog/([0-9]+)/([0-9]+)/edit', EditComment),
+                               ('/blog/([0-9]+)/comment', CreateEditComment),
+                               ('/blog/([0-9]+)/([0-9]+)/edit', CreateEditComment),
                                ('/blog/([0-9]+)/([0-9]+)/delete',
                                 DeleteComment),
                                ('/blog/([0-9]+)/delete', DeletePost),

@@ -1,13 +1,13 @@
 from google.appengine.ext import db
 from globals import render_str
-from comment import Comment
 from like import Like
+from models.user import User
 
 
 class Post(db.Model):
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
-    user_name = db.StringProperty(required=False, default="Unknown")
+    user = db.ReferenceProperty(User, collection_name="posts")
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
 
@@ -43,8 +43,8 @@ class Post(db.Model):
             first_user = False
         return liked_users
 
-    @property
-    def comments(self):
-        """ Returns comments associated with this post """
-        return Comment.all().filter('post_id = ',
-                                    str(self.key().id())).order("-created")
+    # @property
+    # def comments(self):
+    #     """ Returns comments associated with this post """
+    #     return Comment.all().filter('post_id = ',
+    #                                 str(self.key().id())).order("-created")

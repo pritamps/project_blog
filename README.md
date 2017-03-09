@@ -25,4 +25,11 @@ The UI design is such that if an option is not relevant to a user, it is not dis
 1. No "Like" option for a user on their own post
 2. No "Edit" or "Delete" option if the user does not have permission for the current post or comment
 
+## Issues
+
+There are still some issues:
+
+1. The blog displays posts created before the ReferenceProperty system was used, so some posts don't have a username. HOwever, all posts created henceforth will have it. I could not figure out how to delete the db or make changes to the DB on Google App Engine
+2. It looks okay, but the looks across the blog could be much improved
+3. There is no support for images, haha
 

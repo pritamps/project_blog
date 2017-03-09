@@ -4,6 +4,8 @@ from bloghandler import BlogHandler
 from models.post import Post
 from models.like import Like
 
+from google.appengine.ext import db
+
 from globals import blog_key
 
 
@@ -28,10 +30,16 @@ class DeletePost(BlogHandler):
         if post_id and self.user:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
             p = db.get(key)
-            if p.user_name == self.user.name:
+            if not p:
+                self.error(404)
+                return
+            if p.user.name == self.user.name:
                 p.delete()
                 sleep(0.1)
                 self.redirect('/blog')
+        else:
+            self.error(404)
+            return
 
 
 class CreateOrEditPost(BlogHandler):
@@ -64,11 +72,14 @@ class CreateOrEditPost(BlogHandler):
         subject = self.request.get('subject')
         content = self.request.get('content')
 
-        if subject and content and self.user:
+        if subject and content:
             # Edit post
             if post_id:
                 key = db.Key.from_path('Post', int(post_id), parent=blog_key())
                 p = db.get(key)
+                if not p:
+                    self.error(404)
+                    return
                 p.subject = subject
                 p.content = content
                 title = "edit post"
@@ -76,7 +87,7 @@ class CreateOrEditPost(BlogHandler):
             else:
                 title = "new post"
                 p = Post(parent=blog_key(), title=title, subject=subject,
-                         content=content, user_name=self.user.name)
+                         content=content, user=self.user)
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:

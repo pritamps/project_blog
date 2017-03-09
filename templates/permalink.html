@@ -4,7 +4,7 @@
     {{post.render() | safe}}
   <div class="like-comment-bar">
     <div class="like">
-      {% if user and post.user_name != user.name %}
+      {% if user and post.user.name != user.name %}
         {% if not post.has_user_liked(user.name) %}
           <a class="post-link" href="/blog/{{user.name}}/{{post.key().id()}}/like">Like</a> 
         {% else %}
@@ -21,7 +21,7 @@
       Comment
     </div>
     {% endif %}
-    {% if user.name == post.user_name %}
+    {% if user.name == post.user.name %}
     <div class="edit">
       <a class="post-link" href="/blog/{{post.key().id()}}/edit">Edit</a> | 
       <a class="post-link" href="/blog/{{post.key().id()}}/delete">Delete</a>
@@ -35,7 +35,11 @@
     <textarea class="comment_area" name="content">{{content}}</textarea>
     <br>
     <input type="submit">
+
+    <div class="error">{{error_comment}}</div>
+
   </form>
+
 {% endif %}
 
 <div class="error">{{error}}</div>        
