@@ -1,12 +1,4 @@
-import os
-import hashlib
-from time import sleep
-import hmac
-
 import webapp2
-import jinja2
-
-from google.appengine.ext import db
 
 from models.comment import Comment
 from models.post import Post
