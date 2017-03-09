@@ -75,10 +75,6 @@ textarea {
     height: 100px;
 }
 
-input[type=submit] {
-  font-size: 24px;
-}
-
 .main-title {
     display: block;
     color: #222;
@@ -110,6 +106,65 @@ input[type=submit] {
     color: #999;
 
 }
+
+.small_input_box {
+    width: 50px;
+}
+
+#form {
+    background-color: #FFF;
+    height: 600px;
+    width: 600px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 0px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 0px;
+    text-align:center;
+}
+
+label {
+    font-size: 18px;
+    color: #000;
+    height: 20px;
+    width: 200px;
+    margin-top: 10px;
+    margin-left: 10px;
+    text-align: right;
+    margin-right:15px;
+    float:left;
+}
+
+input {
+    margin-top: 10px;
+}
+
+input[type=submit] {
+  border: 1px solid #444;
+  border-radius: 8px;
+  font-size: 18px;
+  background-color: #fff;
+}
+
+input[type=text] {
+    width: 40%;
+    height: 30px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=password] {
+    width: 40%;
+    height: 30px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
 
 .comment + .comment {
     margin-top: 45px;
