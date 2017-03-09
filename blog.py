@@ -17,9 +17,7 @@ from handlers.bloghandler import BlogHandler
 from handlers.mainpagehandler import MainPage
 from handlers.blogfronthandler import BlogFront
 from handlers.postpagehandler import PostPage
-from handlers.createeditposthandler import CreateOrEditPost
-from handlers.like import LikePost
-from handlers.deletepost import DeletePost
+from handlers.posthandlers import CreateOrEditPost, DeletePost, LikePost
 from handlers import commenthandlers
 from handlers.signup import Signup, Register
 from handlers.loginlogout import Login, Logout

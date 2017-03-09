@@ -1,7 +1,37 @@
+from time import sleep
+
 from bloghandler import BlogHandler
 from models.post import Post
+from models.like import Like
 
 from globals import blog_key
+
+
+class LikePost(BlogHandler):
+    """ Handler that handles liking a post """
+
+    def get(self, user_name=None, post_id=None):
+        if post_id and user_name:
+            l = Like(parent=blog_key(), post_id=post_id,
+                     user_name=user_name)
+            l.put()
+            sleep(0.1)
+            self.redirect('/blog/%s' % post_id)
+
+
+class DeletePost(BlogHandler):
+    """
+    Deletes a Post
+    """
+
+    def get(self, post_id):
+        if post_id and self.user:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            p = db.get(key)
+            if p.user_name == self.user.name:
+                p.delete()
+                sleep(0.1)
+                self.redirect('/blog')
 
 
 class CreateOrEditPost(BlogHandler):
