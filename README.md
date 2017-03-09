@@ -2,7 +2,7 @@
 
 This sets up a simple Multi-User blog on the Google App Engine.
 
-To see this in action, visit [https://fullstack-158702.appspot.com](https://fullstack-158702.appspot.com) 
+To see this in action, visit [https://fullstack-158702.appspot.com/blog](https://fullstack-158702.appspot.com/blog) 
 
 ## Functionality
 
