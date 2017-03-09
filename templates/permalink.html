@@ -11,8 +11,8 @@
           Liked!
         {% endif %}
       {% endif %}
-      <div class="popup" onclick="myFunction()"> 👍 {{post.get_number_of_likes() }} 
-        <span class="popuptext" id="myPopup">{{post.get_liked_users() }}</span>
+      <div class="popup" onclick="myFunction()"> 👍 {{post.likes }} 
+        <span class="popuptext" id="myPopup">{{post.liked_users }}</span>
       </div>
       
     </div>
@@ -30,7 +30,7 @@
   </div>
 
 {% if user %}
-  <form method="post">
+  <form method="post" action="/blog/{{post.key().id()}}/comment">
     <div>Comment</div>
     <textarea class="comment_area" name="content">{{content}}</textarea>
     <br>

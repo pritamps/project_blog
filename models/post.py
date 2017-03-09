@@ -10,17 +10,16 @@ class Post(db.Model):
     user_name = db.StringProperty(required=False, default="Unknown")
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
-    n_likes = 0
 
     def render(self):
 
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p=self)
 
-    def get_number_of_likes(self):
+    @property
+    def likes(self):
         """ Returns number of likes that the current post has """
-        n_likes = Like.all().filter('post_id = ', str(self.key().id())).count()
-        return str(n_likes)
+        return Like.all().filter('post_id = ', str(self.key().id())).count()
 
     def has_user_liked(self, user_name):
         """ Returns if the current user has liked this post """
@@ -30,7 +29,8 @@ class Post(db.Model):
             return True
         return False
 
-    def get_liked_users(self):
+    @property
+    def liked_users(self):
         """ Returns list of users for the popup """
         likes = Like.all().filter('post_id = ', str(self.key().id()))
         liked_users = ""
@@ -43,6 +43,8 @@ class Post(db.Model):
             first_user = False
         return liked_users
 
-    def get_comments(self):
+    @property
+    def comments(self):
         """ Returns comments associated with this post """
-        return Comment.all().filter('post_id = ', str(self.key().id())).order("-created")
+        return Comment.all().filter('post_id = ',
+                                    str(self.key().id())).order("-created")

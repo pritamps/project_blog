@@ -3,8 +3,32 @@ from bloghandler import BlogHandler
 from google.appengine.ext import db
 
 from models.post import Post
+from models.comment import Comment
 
 from globals import blog_key
+
+
+class CreateComment(BlogHandler):
+    def post(self, post_id):
+        """
+        Adds a new comment to the post
+        """
+        content = self.request.get('content')
+
+        if not content:
+            self.redirect('/blog/%s' % post_id)
+            return
+        if not self.user:
+            user_name = "Anon"
+            # self.redirect('/blog')
+        else:
+            user_name = self.user.name
+
+        comment = Comment(parent=blog_key(), post_id=post_id,
+                          user_name=user_name, content=content)
+        comment.put()
+        sleep(0.1)
+        self.redirect('/blog/%s' % post_id)
 
 
 class DeleteComment(BlogHandler):

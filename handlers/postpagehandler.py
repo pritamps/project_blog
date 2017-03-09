@@ -24,7 +24,7 @@ class PostPage(BlogHandler):
             return
 
         self.render("permalink.html", post=self.post_obj,
-                    comments=self.post_obj.get_comments())
+                    comments=self.post_obj.comments)
 
     def post(self, post_id):
         """

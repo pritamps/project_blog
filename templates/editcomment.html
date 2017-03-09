@@ -1,16 +1,18 @@
-{% extends "base.html" %}
+{% extends "base.html" %} 
 
 {% block content %}
-  <h2>edit comment</h2>
+<h2>edit comment</h2>
 
-    <form method="post">
-      <label>
-        <div>comment</div>
-        <textarea name="content">{{content}}</textarea>
-      </label>
+<form method="post">
+  <label>
+    <div>comment</div>
+  </label>
+  <textarea name="content">{{content}}</textarea>
+  <div class="error">{{error}}</div>
 
-      <div class="error">{{error}}</div>
+  <div style="text-align:center;">
 
-      <input type="submit">
-    </form>
+    <input type="submit">
+  </div>
+</form>
 {% endblock %}
