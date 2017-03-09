@@ -22,13 +22,13 @@ class LikePost(BlogHandler):
             # Check if current user is author of the post, and if so,
             # do nothing and return to the blog page
             if user_name == post.user.name:
-                self.redirect('blog/%s' % post_id)
+                self.redirect('/blog/%s' % post_id)
 
             # Check if user has already liked the post before, and if so,
             # do nothing and return to the blog page
-            for like in post.likes:
-                if like.user_name == user_name:
-                    self.redirect('blog/%s' % post_id)
+            if post.has_user_liked(user_name):
+                self.redirect('/blog/%s' % post_id)
+                return
             l = Like(parent=blog_key(), post_id=post_id,
                      user_name=user_name)
             l.put()
