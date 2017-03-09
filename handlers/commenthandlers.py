@@ -93,8 +93,3 @@ class DeleteComment(BlogHandler):
             return
 
 
-class EditComment(BlogHandler):
-    """
-    Edits Comment
-    """
-
