@@ -60,7 +60,7 @@ class CreateEditComment(BlogHandler):
                 return
             # Make sure comment author is same as current user before
             # making the edit. If there is a mismatch, redirect to post page
-            if not (self.comment.user_name == self.user.name):
+            if not (comment.user_name == self.user.name):
                 self.redirect('/blog/%s' % post_id)
                 return
             comment.content = content
