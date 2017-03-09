@@ -4,6 +4,15 @@ This sets up a simple Multi-User blog on the Google App Engine.
 
 To see this in action, visit [https://fullstack-158702.appspot.com/blog](https://fullstack-158702.appspot.com/blog) 
 
+## Running on your local machine
+
+1. Install google app engine and make sure it's on your path. Documentation is [here](https://cloud.google.com/appengine/downloads)
+2. Clone this repository, navigate to the folder, and run:
+```
+dev_appserver.py .
+```
+to run on your local machine.
+
 ## Functionality
 
 The following functionality is supported
