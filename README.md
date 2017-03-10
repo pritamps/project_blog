@@ -1,6 +1,11 @@
 # Multi-User Blog
 
-This sets up a simple Multi-User blog on the Google App Engine.
+This sets up a simple Multi-User blog on the Google App Engine. It was done as a part of [Udacity's Full Stack Nanodegree](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd004). Through this project, the following skills were added to my toolbox:
+
+1. Templating engines
+2. Google app engine
+3. GQL
+4. The webapp2 library in Python, similar to Flask etc.
 
 To see this in action, visit [https://fullstack-158702.appspot.com/blog](https://fullstack-158702.appspot.com/blog) 
 
